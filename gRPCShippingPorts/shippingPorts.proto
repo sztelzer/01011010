@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "github.com/sztelzer/01011010/shippingportsproto";
+package shippingportsproto;
+
+// message ShippingPort represents one Shipping Port, with all its properties
+message ShippingPort {
+  string id = 1;
+  string name = 2;
+  string city = 3;
+  string country = 4;
+  repeated string alias = 5;
+  repeated string regions = 6;
+  repeated float coordinates = 7;
+  string province = 8;
+  string timezone = 9;
+  repeated string unlocs = 10;
+  string code = 11;
+}
+
+// message ShippingPortId transports just one id, used on the Get method
+message ShippingPortId {
+  string id = 1;
+}
+
+// message Ok is a stub for when we need to signal some empty response
+message Ok {}
+
+// this is the main communication protocol definition between client and server
+// these methods are implemented on the server
+service ShippingPorts {
+  // Sends a ShippingPort to be saved
+  rpc Put (ShippingPort) returns (Ok) {}
+
+  // Request a ShippingPort by its id
+  rpc Get (ShippingPortId) returns (ShippingPort) {}
+
+}
+
