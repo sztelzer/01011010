@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option go_package = "github.com/sztelzer/01011010/shippingportsproto";
-package shippingportsproto;
+option go_package = "github.com/sztelzer/01011010/shippingportspb";
+package shippingportspb;
 
 // message ShippingPort represents one Shipping Port, with all its properties
 message ShippingPort {
@@ -27,8 +27,8 @@ message ShippingPortId {
 message Ok {}
 
 // this is the main communication protocol definition between client and server
-// these methods are implemented on the server
-service ShippingPorts {
+// these methods are implemented on the server and consumed on clients
+service ShippingPortsServer {
   // Sends a ShippingPort to be saved
   rpc Put (ShippingPort) returns (Ok) {}
 
