@@ -104,3 +104,19 @@ The JSON file format must be as follows, with any size:
 **So, to rebuild after changes, just run `% make` (where the makefile is, the root).**
 
 **No changes? Just pull the docker compose image and run.**
+
+
+## Annotations
+
+Most important:
++ graceful shutdown
++ env process count
++ mod database
++ dois exemplos nos testes
++ revisada na documentação de mounting
+
+Bonus points:
++ better closure detection
++ multiplos ponteiros de leitura
++ verificar se versão do porto é realmente mais nova (posição offset do reader)
++ get many paged

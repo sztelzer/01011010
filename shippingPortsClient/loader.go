@@ -39,6 +39,7 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 	var shippingPortsChan = make(chan *shippingportsprotocol.ShippingPort, 256)
 	
 	// spawn multiple loaders
+	// TODO: set from env var
 	for loaders := 0; loaders < 8; loaders++ {
 		go func() {
 			for {
@@ -47,6 +48,7 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 					_, err = shippingPortsServerClient.Put(context.Background(), shippingPort)
 					if err != nil {
 						log.Println(err)
+						waitGroup.Done()
 						continue
 					}
 					atomic.AddInt32(&putCount, 1)

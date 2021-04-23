@@ -19,6 +19,9 @@ var shippingPortsClientAddress = ":8080"
 // default json file to load from
 var shippingPortsOriginJsonFile = "./ports.json"
 
+//
+
+
 func init() {
 	// load env files to substitute defaults
 	if envServerAddress, ok := os.LookupEnv("SERVER_ADDRESS"); ok {
