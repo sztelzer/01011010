@@ -2,7 +2,7 @@
 
 ## Introduction and Public REST Interface
 
-**TLDR; There is only one public endpoint: `GET /shippingports/:portId`**
+**TLDR; There is only one public endpoint: `GET /shippingports/:shippingPortId`**
 
 ShippingPorts is a really simple REST service from where you can ONLY retrieve information about shipping ports around the
 world by passing the unique identifier of the shipping port to the retrieval endpoint (that is the only one for now). 
