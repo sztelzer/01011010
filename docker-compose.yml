@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  client:
+    image: shippingPortsClient
+    container_name: shippingPortsClient_1
+    ports:
+      - "8080:8080"
+    volumes:
+      - ~/ShippingPortsSource:dropbox
+    environment:
+      - SERVE_CLIENT_AT_ADDRESS=:8080
+      - SERVER_ADDRESS=shippingPortsServer_1:50051
+
+  server:
+    image: shippingPortsServer
+    container_name: shippingPortsServer_1
+    environment:
+      - SERVE_AT_ADDRESS=:50051

@@ -51,17 +51,18 @@ func main() {
 	shippingPortsServerClient := shippingportsprotocol.NewShippingPortsServerClient(serverConnection)
 	
 	// load ports from file to shippingPortsServerClient, don't wait the loading
-	go saveShippingPortsFromFile("ports.json", shippingPortsServerClient)
+	go saveShippingPortsFromFile("dropbox/ports.json", shippingPortsServerClient)
 	
-
 	// Serve the REST API
 	// Register a handler for requests
 	http.HandleFunc("/", mainHandler(shippingPortsServerClient))
 
 	// Start server
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(shippingPortsClientAddress, nil))
 }
 
+
+// mainHandler checks the path requested, extracts the Shipping Port Id and get it from the server.
 func mainHandler (shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
