@@ -8,6 +8,9 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sync"
+	"sync/atomic"
+	"time"
 	
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 )
@@ -15,6 +18,7 @@ import (
 // savePortsFromFile reads a file of objects and saves each to server
 // TODO: segment file and run multiple readers
 func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) {
+	startTime := time.Now()
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatalln(err)
@@ -22,15 +26,38 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 	}
 	// we will use only one reader, but could be many
 	reader := bufio.NewReader(f)
-
+	
 	// discard first line
 	_, err = reader.ReadBytes('\n')
 	if err != nil {
 		log.Fatalln(err)
 	}
 	
-	var putCount int
-
+	var putCount int32
+	
+	var waitGroup sync.WaitGroup
+	var shippingPortsChan = make(chan *shippingportsprotocol.ShippingPort, 256)
+	
+	// spawn multiple loaders
+	for loaders := 0; loaders < 8; loaders++ {
+		go func() {
+			for {
+				select {
+				case shippingPort, more := <-shippingPortsChan:
+					_, err = shippingPortsServerClient.Put(context.Background(), shippingPort)
+					if err != nil {
+						log.Println(err)
+						continue
+					}
+					atomic.AddInt32(&putCount, 1)
+					waitGroup.Done()
+					if !more {
+						return
+					}
+				}
+			}
+		}()
+	}
 	
 	// lets range over blocks of lines that represents each shippingPort in the json
 	for {
@@ -42,17 +69,15 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 			log.Println(err)
 			continue
 		}
-		_, err = shippingPortsServerClient.Put(context.Background(), nextShippingPort)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		putCount++
+		
+		waitGroup.Add(1)
+		shippingPortsChan <- nextShippingPort
 	}
 	
-	log.Printf("successfully loaded %d shippingPorts from file to server", putCount)
+	waitGroup.Wait()
+	
+	log.Printf("successfully loaded %d shippingPorts from file to server in %v", putCount, time.Now().Sub(startTime))
 }
-
 
 // ReadNextShippingPort advances one block of lines that represents each shippingPort and returns it
 // As reader is a pointer, the position is stateful
