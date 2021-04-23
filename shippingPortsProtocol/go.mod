@@ -1,4 +1,4 @@
-module github.com/sztelzer/01011010/shippingportsproto
+module github.com/sztelzer/01011010/shippingportspb
 
 go 1.16
 
