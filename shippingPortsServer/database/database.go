@@ -39,6 +39,7 @@ func (spd *ShippingPortsDatabase) Get(key string) (*[]byte, error) {
 }
 
 // Delete removes the key and value from database, but does not verify the presence of the key before
+// Returning an error could be misleading
 func (spd *ShippingPortsDatabase) Delete(key string) {
 	delete(spd.store, key)
 }
