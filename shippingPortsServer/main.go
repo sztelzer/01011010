@@ -5,8 +5,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	
-	"github.com/sztelzer/01011010/shippingportsserver/database"
+	"github.com/sztelzer/01011010/memdatabase"
 	
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
@@ -16,9 +17,9 @@ import (
 // shippingPortsServerAddress is the default shippingPortsProtocolServer address, but it may be changed by SERVE_AT_ADDRESS env variable.
 var shippingPortsServerAddress = ":50051"
 
-// shippingPortsDatabase is the database instance that will be used during the life time of the server.
-// It is a in memory database and it does not persist state.
-var shippingPortsDatabase = database.New()
+// shippingPortsDatabase is the memdatabase instance that will be used during the life time of the server.
+// It is a in memory memdatabase and it does not persist state.
+var shippingPortsDatabase = memdatabase.New()
 
 func init() {
 	// just check if non default shippingPortsProtocolServer port was given in the environment (usually Dockerfile or docker-compose.yaml)
@@ -56,7 +57,7 @@ func (s *shippingPortsProtocolServer) Put(ctx context.Context, shippingPort *shi
 	return &shippingportsprotocol.Ok{}, nil
 }
 
-// Get from database a port object by the Port Id. Unmarshal and respond.
+// Get from memdatabase a port object by the Port Id. Unmarshal and respond.
 // TODO: implement context reactions on Get method.
 func (s *shippingPortsProtocolServer) Get(ctx context.Context, shippingPortId *shippingportsprotocol.ShippingPortId) (*shippingportsprotocol.ShippingPort, error) {
 	// retrieve the marshaled binary for the Port Id.
@@ -79,23 +80,37 @@ func (s *shippingPortsProtocolServer) Get(ctx context.Context, shippingPortId *s
 }
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+	
 	// open the shippingPortsServerAddress to the network. It will fail if the network port is already in use. It will not retry.
 	listener, err := net.Listen("tcp", shippingPortsServerAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	defer listener.Close()
+	
 	// success, log it the moment
 	log.Printf("shippingPortsProtocolServer listening on port: %v", shippingPortsServerAddress)
 	
 	// get a new generic grpc server that we will attach the protocol buffer of Ports
 	grpcServer := grpc.NewServer()
-	
+	defer grpcServer.GracefulStop()
 	// register the shippingPortsProtocolServer type/methods to the grpcServer
 	// TODO: remove 'Server' from service definition? For Service?
 	shippingportsprotocol.RegisterShippingPortsServerServer(grpcServer, &shippingPortsProtocolServer{})
 	
-	// this will block the service open until some severe failure
-	if err = grpcServer.Serve(listener); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	go func() {
+		// this will block the service open until some severe failure
+		if err = grpcServer.Serve(listener); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+	
+	// Graceful shutdown
+	select {
+	case <-ctx.Done():
+		log.Println(ctx.Err())
+		return
 	}
 }

@@ -1,38 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"reflect"
 	"testing"
-	
-	"github.com/sztelzer/01011010/shippingportsprotocol"
 )
-
-func TestReadNextShippingPort(t *testing.T) {
-	type args struct {
-		reader *bufio.Reader
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *shippingportsprotocol.ShippingPort
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := ReadNextShippingPort(tt.args.reader)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ReadNextShippingPort() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ReadNextShippingPort() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func Test_extractShippingPortId(t *testing.T) {
 	type args struct {
@@ -44,7 +14,38 @@ func Test_extractShippingPortId(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "expected correct",
+			args: args{
+				path: "/shippingports/SYDY0",
+			},
+			want:    "SYDY0",
+			wantErr: false,
+		},
+		{
+			name: "expected downcase corrected",
+			args: args{
+				path: "/shippingports/sydy0",
+			},
+			want:    "SYDY0",
+			wantErr: false,
+		},
+		{
+			name: "wrong endpoint",
+			args: args{
+				path: "/shippigports/SYDY0",
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "good cleanup",
+			args: args{
+				path: "/shippingports/SYDtY0{}",
+			},
+			want:    "SYDTY0",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -60,6 +61,8 @@ func Test_extractShippingPortId(t *testing.T) {
 	}
 }
 
+// TODO: create stub requests for test
+// this test must build a complete request
 // func Test_mainHandler(t *testing.T) {
 // 	type args struct {
 // 		shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient
@@ -76,23 +79,6 @@ func Test_extractShippingPortId(t *testing.T) {
 // 			if got := mainHandler(tt.args.shippingPortsServerClient); !reflect.DeepEqual(got, tt.want) {
 // 				t.Errorf("mainHandler() = %v, want %v", got, tt.want)
 // 			}
-// 		})
-// 	}
-// }
-
-// func Test_saveShippingPortsFromFile(t *testing.T) {
-// 	type args struct {
-// 		filename                  string
-// 		shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient
-// 	}
-// 	tests := []struct {
-// 		name string
-// 		args args
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
 // 		})
 // 	}
 // }

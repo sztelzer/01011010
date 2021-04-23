@@ -17,13 +17,16 @@ import (
 
 // savePortsFromFile reads a file of objects and saves each to server
 // TODO: segment file and run multiple readers
-func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) {
+func loadShippingPortsFromFileToServer(ctx context.Context, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) {
 	startTime := time.Now()
-	f, err := os.Open(filename)
+	
+	f, err := os.Open(shippingPortsOriginJsonFile)
 	if err != nil {
 		log.Fatalln(err)
 		return
 	}
+	defer f.Close()
+	
 	// we will use only one reader, but could be many
 	reader := bufio.NewReader(f)
 	
@@ -36,23 +39,26 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 	var putCount int32
 	
 	var waitGroup sync.WaitGroup
-	var shippingPortsChan = make(chan *shippingportsprotocol.ShippingPort, 256)
+	var shippingPortsChan = make(chan *shippingportsprotocol.ShippingPort, 512)
 	
 	// spawn multiple loaders
-	// TODO: set from env var
-	for loaders := 0; loaders < 8; loaders++ {
+	for putters := 0; putters < shippingPortsPutters; putters++ {
 		go func() {
 			for {
 				select {
+				case <-ctx.Done():
+					return
 				case shippingPort, more := <-shippingPortsChan:
-					_, err = shippingPortsServerClient.Put(context.Background(), shippingPort)
-					if err != nil {
-						log.Println(err)
+					if shippingPort != nil {
+						_, err = shippingPortsServerClient.Put(ctx, shippingPort)
+						if err != nil {
+							log.Println(err)
+							waitGroup.Done()
+							continue
+						}
+						atomic.AddInt32(&putCount, 1)
 						waitGroup.Done()
-						continue
 					}
-					atomic.AddInt32(&putCount, 1)
-					waitGroup.Done()
 					if !more {
 						return
 					}
@@ -63,7 +69,10 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 	
 	// lets range over blocks of lines that represents each shippingPort in the json
 	for {
-		nextShippingPort, err := ReadNextShippingPort(reader)
+		if ctx.Err() != nil {
+			break
+		}
+		nextShippingPort, err := readNextShippingPort(reader)
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -77,14 +86,15 @@ func saveShippingPortsFromFile(filename string, shippingPortsServerClient shippi
 	}
 	
 	waitGroup.Wait()
+	close(shippingPortsChan)
 	
 	log.Printf("successfully loaded %d shippingPorts from file to server in %v", putCount, time.Now().Sub(startTime))
 }
 
-// ReadNextShippingPort advances one block of lines that represents each shippingPort and returns it
+// readNextShippingPort advances one block of lines that represents each shippingPort and returns it
 // As reader is a pointer, the position is stateful
 // TODO: better handling of block closures
-func ReadNextShippingPort(reader *bufio.Reader) (*shippingportsprotocol.ShippingPort, error) {
+func readNextShippingPort(reader *bufio.Reader) (*shippingportsprotocol.ShippingPort, error) {
 	
 	firstLine, err := reader.ReadBytes(':')
 	if err != nil {

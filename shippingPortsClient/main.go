@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"strconv"
 	
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
@@ -11,7 +14,7 @@ import (
 
 // shippingPortsServerAddress is the default connection string to the gRPC shippingPortsServer
 // It may be changed by the environment variable SERVER_ADDRESS
-var shippingPortsServerAddress = "shippingportsserver:50051"
+var shippingPortsServerAddress = ":50051"
 
 // shippingPortsClientAddress is the default port to serve the REST API
 var shippingPortsClientAddress = ":8080"
@@ -19,8 +22,8 @@ var shippingPortsClientAddress = ":8080"
 // default json file to load from
 var shippingPortsOriginJsonFile = "./ports.json"
 
-//
-
+// default number of shippingPorts putters routines
+var shippingPortsPutters = 8
 
 func init() {
 	// load env files to substitute defaults
@@ -36,9 +39,20 @@ func init() {
 		shippingPortsOriginJsonFile = "dropbox/" + envLoadFilename
 	}
 	
+	if envLoadPutters, ok := os.LookupEnv("LOAD_SHIPPING_PORTS_PUTTERS"); ok {
+		n, err := strconv.Atoi(envLoadPutters)
+		if err != nil {
+			log.Printf("could not parse LOAD_SHIPPING_PORTS_PUTTERS=%s, using default", envLoadPutters)
+		} else {
+			shippingPortsPutters = n
+		}
+	}
+	
 }
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
 	
 	// Set up a connection to the ports server
 	// It will block if can't connect, like waiting for the server go online
@@ -47,18 +61,33 @@ func main() {
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	// Connection closes if exiting.
 	defer serverConnection.Close()
 	
+	// create a client for this connection
 	shippingPortsServerClient := shippingportsprotocol.NewShippingPortsServerClient(serverConnection)
 	
 	// load ports from file to shippingPortsServerClient, don't wait the loading
-	go saveShippingPortsFromFile(shippingPortsOriginJsonFile, shippingPortsServerClient)
+	go loadShippingPortsFromFileToServer(ctx, shippingPortsServerClient)
 	
 	// Serve the REST API
 	// Register a handler for requests
 	http.HandleFunc("/", mainHandler(shippingPortsServerClient))
 	
+	srv := &http.Server{Addr: shippingPortsClientAddress}
+	
 	// Start server
-	log.Fatal(http.ListenAndServe(shippingPortsClientAddress, nil))
+	go func() {
+		err = srv.ListenAndServe()
+		log.Println(err)
+		cancel()
+	}()
+	
+	// Graceful shutdown
+	select {
+	case <-ctx.Done():
+		srv.Shutdown(ctx)
+		log.Println(ctx.Err())
+		return
+	}
+	
 }

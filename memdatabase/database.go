@@ -1,6 +1,6 @@
-// Package database implements a simple memory key value storage.
-// One should get a new database instance with database.New()
-package database
+// Package memdatabase implements a simple memory key value storage.
+// One should get a new memdatabase instance with memdatabase.New()
+package memdatabase
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-// ShippingPortsDatabase is a map serving as stub for a key value pairs database, such as Memcache.
+// ShippingPortsDatabase is a map serving as stub for a key value pairs memdatabase, such as Memcache.
 // We use byte slice as the best general format for RPC struct types marshalling.
 // The key string is the id of port.
 type ShippingPortsDatabase struct {
@@ -16,7 +16,7 @@ type ShippingPortsDatabase struct {
 	mu sync.Mutex
 }
 
-// New returns a new instance of a shippingPorts database
+// New returns a new instance of a shippingPorts memdatabase
 func New() *ShippingPortsDatabase {
 	return &ShippingPortsDatabase{store: make(map[string][]byte)}
 }
@@ -44,7 +44,7 @@ func (spd *ShippingPortsDatabase) Get(key string) (*[]byte, error) {
 	return &value, nil
 }
 
-// Delete removes the key and value from database, but does not verify the presence of the key before
+// Delete removes the key and value from memdatabase, but does not verify the presence of the key before
 // Returning an error could be misleading
 func (spd *ShippingPortsDatabase) Delete(key string) {
 	spd.mu.Lock()

@@ -109,14 +109,17 @@ The JSON file format must be as follows, with any size:
 ## Annotations
 
 Most important:
-+ graceful shutdown
-+ env process count
 + mod database
-+ dois exemplos nos testes
-+ revisada na documentação de mounting
++ review readmes
 
 Bonus points:
 + better closure detection
-+ multiplos ponteiros de leitura
-+ verificar se versão do porto é realmente mais nova (posição offset do reader)
++ multiple readers
++ add version to shippingports object
 + get many paged
+
+Done
++ env process count
++ graceful shutdown
++ test rest handler 
++ test file block reader  

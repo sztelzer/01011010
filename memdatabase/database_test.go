@@ -1,4 +1,4 @@
-package database
+package memdatabase
 
 import (
 	"reflect"
@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		want *ShippingPortsDatabase
 	}{
 		{
-			name: "new database",
+			name: "new memdatabase",
 			want: &ShippingPortsDatabase{
 				store: make(map[string][]byte),
 			},
