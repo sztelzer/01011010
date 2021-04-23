@@ -1,9 +1,9 @@
 FROM scratch
 
-COPY shippingPortsClient /
+COPY shippingPortsClientApp /
 
-RUN mkdir dropbox
+#RUN mkdir dropbox
 
 EXPOSE 8080
 
-ENTRYPOINT ["shippingPortsClient"]
+ENTRYPOINT ["./shippingPortsClientApp"]

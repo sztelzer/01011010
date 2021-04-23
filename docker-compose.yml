@@ -2,18 +2,19 @@ version: "3.8"
 
 services:
   client:
-    image: shippingPortsClient
-    container_name: shippingPortsClient_1
+    image: shippingportsclient
+    container_name: shippingportsclient_1
     ports:
       - "8080:8080"
     volumes:
-      - ~/ShippingPortsSource:dropbox
+      - ~/ShippingPortsSource:/dropbox
     environment:
       - SERVE_CLIENT_AT_ADDRESS=:8080
-      - SERVER_ADDRESS=shippingPortsServer_1:50051
+      - SERVER_ADDRESS=shippingportsserver_1:50051
+      - LOAD_SHIPPING_PORTS_JSON_FILENAME=ports.json
 
   server:
-    image: shippingPortsServer
-    container_name: shippingPortsServer_1
+    image: shippingportsserver
+    container_name: shippingportsserver_1
     environment:
       - SERVE_AT_ADDRESS=:50051

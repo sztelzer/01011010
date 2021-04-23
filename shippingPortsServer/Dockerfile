@@ -1,7 +1,7 @@
 FROM scratch
 
-COPY shippingPortsServer /
+COPY shippingPortsServerApp /
 
 EXPOSE 50051
 
-ENTRYPOINT ["shippingPortsServer"]
+ENTRYPOINT ["./shippingPortsServerApp"]

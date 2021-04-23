@@ -1,6 +1,6 @@
-module github.com/sztelzer/01011010/shippingPortsClient
+module github.com/sztelzer/01011010/shippingportsclient
 
-replace github.com/sztelzer/01011010/shippingportsprotocol => ../shippingPortsProtocol
+replace github.com/sztelzer/01011010/shippingportsprotocol => ../shippingportsprotocol
 
 go 1.16
 
