@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option go_package = "github.com/sztelzer/01011010/shippingportspb";
-package shippingportspb;
+option go_package = "github.com/sztelzer/01011010/shippingportsprotocol";
+package shippingportsprotocol;
 
 // message ShippingPort represents one Shipping Port, with all its properties
 message ShippingPort {

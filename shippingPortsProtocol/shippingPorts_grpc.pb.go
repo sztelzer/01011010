@@ -4,7 +4,7 @@
 // - protoc             v3.14.0
 // source: shippingPorts.proto
 
-package shippingportspb
+package shippingportsprotocol
 
 import (
 	context "context"
@@ -38,7 +38,7 @@ func NewShippingPortsServerClient(cc grpc.ClientConnInterface) ShippingPortsServ
 
 func (c *shippingPortsServerClient) Put(ctx context.Context, in *ShippingPort, opts ...grpc.CallOption) (*Ok, error) {
 	out := new(Ok)
-	err := c.cc.Invoke(ctx, "/shippingportspb.ShippingPortsServer/Put", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/shippingportsprotocol.ShippingPortsServer/Put", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *shippingPortsServerClient) Put(ctx context.Context, in *ShippingPort, o
 
 func (c *shippingPortsServerClient) Get(ctx context.Context, in *ShippingPortId, opts ...grpc.CallOption) (*ShippingPort, error) {
 	out := new(ShippingPort)
-	err := c.cc.Invoke(ctx, "/shippingportspb.ShippingPortsServer/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/shippingportsprotocol.ShippingPortsServer/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func _ShippingPortsServer_Put_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/shippingportspb.ShippingPortsServer/Put",
+		FullMethod: "/shippingportsprotocol.ShippingPortsServer/Put",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShippingPortsServerServer).Put(ctx, req.(*ShippingPort))
@@ -116,7 +116,7 @@ func _ShippingPortsServer_Get_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/shippingportspb.ShippingPortsServer/Get",
+		FullMethod: "/shippingportsprotocol.ShippingPortsServer/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShippingPortsServerServer).Get(ctx, req.(*ShippingPortId))
@@ -128,7 +128,7 @@ func _ShippingPortsServer_Get_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ShippingPortsServer_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "shippingportspb.ShippingPortsServer",
+	ServiceName: "shippingportsprotocol.ShippingPortsServer",
 	HandlerType: (*ShippingPortsServerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
