@@ -103,15 +103,4 @@ The JSON file format must be as follows, with any size:
 
 **So, to rebuild after changes, just run `% make` (where the makefile is, the root).**
 
-No changes? Just pull the docker compose image and run it.
-
-# Useful Commands
-
-## Generate gRPC package from proto definition
-This will generate/rewrite the go package that implements gRPC used in the applications. 
-It's the core where everything begins.
-```
-protoc --go_out=. --go_opt=paths=source_relative \                                      
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    shippingPortsProtocol/shippingPorts.proto
-```
+**No changes? Just pull the docker compose image and run.**
