@@ -7,11 +7,11 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ~/ShippingPortsSource:/dropbox
+      - ${BIND_PATH}:/dropbox
     environment:
+      - LOAD_SHIPPING_PORTS_JSON_FILENAME=${JSON_FILENAME}
       - SERVE_CLIENT_AT_ADDRESS=:8080
       - SERVER_ADDRESS=shippingportsserver_1:50051
-      - LOAD_SHIPPING_PORTS_JSON_FILENAME=ports.json
       - LOAD_SHIPPING_PORTS_PUTTERS=4
 
   server:

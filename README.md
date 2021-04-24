@@ -1,16 +1,28 @@
 # 01011010
 
-## Introduction and Public REST Interface
+Fast start: clone this repository to your local machine.
+Run make with the path and filename of your Shipping Ports json file.
 
-**TLDR; There is only one public endpoint: `GET /shippingports/:shippingPortId`**
+```
+% git clone https://github.com/sztelzer/01011010
+% cd 01011010
+% make BIND_PATH=~/shipping JSON_FILENAME=ports.json
+```
 
-ShippingPortsClient is a simple REST service from where you can ONLY retrieve information about world shipping ports by 
-passing the unique identifier of it to the retrieval endpoint. 
+This is a set of two services running in docker compose. It's easy to run, but please attention to one detail:
+**You must specify a local directory to bind and filename from where the client service will read data to fill the database.**
+The specifics of this json file will be discussed further below.
 
-For example, if running on a local machine, you can retrieve information about the shipping port MUSIK hitting the 
-service address (GET) `http://localhost:8080/shippingports/MUSIK` which yelds the following json encoded string on the 
-response body and status code `200`.
+This make command will be your best friend. It tests, builds and runs everything that is necessary. You just need to 
+have docker.
 
+## Public REST Interface
+
+**TLDR; There is only one public endpoint, by default in port 8080.**
+Example to get Shipping Port with id `MUSIK` (this id is ficticious).
+```
+curl -X GET localhost:8080/shippingports/MUSIK
+```
 ``` json
 {
     "id": "MUSIK",
@@ -30,17 +42,16 @@ response body and status code `200`.
     ]
 }
 ```
-
-In case you hit a malformed or non existent shipping port code, the response will be the status code `404` `not found`. 
+In case you hit a malformed or non existent shipping port code, the response will be the status code `404 not found`.
 If you try other http method, will get `invalid request method`
 If something awful happens inside our service, it will respond some various `5xx` codes relative to the problem.
 
 
 ## Running the service
 
-**TLDR; having docker and make on your system run make at the root directory of this repo.**
+**TLDR; having docker and make on your system run make at the root directory of this repository.**
 ```
-01011010 % make
+01011010 % make BIND_PATH=~/shipping JSON_FILENAME=ports.json
 ```
 The commands in make are cascading dependent, each running all others before:
 - `make proto` Update the protocol buffers packages
@@ -53,6 +64,13 @@ The commands in make are cascading dependent, each running all others before:
 `% make == % make all == % make run`
 
 So, just make.
+
+We use cross compilation of go apps to `linux/amd64` by default. If you would like to build it for 
+`linux/arm64`, than run `% make ARCH=arm64`.
+
+
+
+
 
 This project is a collection of two services meant to be used together, organized around common protocol buffers and
 interconnected through gRPC. It is built spanning many Go Modules, but don't frail. It's quite simple.
