@@ -110,23 +110,17 @@ The JSON file format must be as follows, but with any size:
     ...
 }
 ```
-Check the protocol file definition `shippingPortsProtocol/shippingPorts.proto` to understand the protocol and structures.
 
+Check the protocol file definition `shippingPortsProtocol/shippingPorts.proto` to understand the protocol and
+structures.
 
-## Annotations
+## Some controls
 
-Bonus points:
+You can control the quantity of LOAD_SHIPPING_PORTS_PUTTERS running. They read from a channel that is fed with objects
+read from the file, and send concurrent requests to the server. Too little (1) will probably result in poor performance.
+Too much we risk overflowing the system with unneeded switches. It depends on many factors of the system running.
+If the default value is not suitable, you can try to augment it.
 
-+ better closure detection
-+ multiple readers
-+ add version to shippingports object
-+ get many paged
+You find these options in the `docker-compose.yml`
 
-Done
-
-+ env process count
-+ graceful shutdown
-+ test rest handler
-+ test file block reader  
-+ mod database
-+ review readmes
+There you can also change the default ports of services.
