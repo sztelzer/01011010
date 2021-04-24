@@ -109,7 +109,6 @@ The JSON file format must be as follows, with any size:
 ## Annotations
 
 Most important:
-+ mod database
 + review readmes
 
 Bonus points:
@@ -123,3 +122,4 @@ Done
 + graceful shutdown
 + test rest handler 
 + test file block reader  
++ mod database

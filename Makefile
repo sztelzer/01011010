@@ -23,7 +23,7 @@ docker: build
 	docker build ./shippingPortsClient -t shippingportsclient
 
 run: docker
-	docker compose up -d
+	docker compose up
 
 clean:
 	go clean

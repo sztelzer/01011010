@@ -12,6 +12,7 @@ services:
       - SERVE_CLIENT_AT_ADDRESS=:8080
       - SERVER_ADDRESS=shippingportsserver_1:50051
       - LOAD_SHIPPING_PORTS_JSON_FILENAME=ports.json
+      - LOAD_SHIPPING_PORTS_PUTTERS=4
 
   server:
     image: shippingportsserver

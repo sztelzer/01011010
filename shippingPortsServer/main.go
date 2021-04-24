@@ -38,7 +38,6 @@ type shippingPortsProtocolServer struct {
 // so to disable lockers present in the object. It also allows us to recover the object state on Get.
 // The actual shippingPortsDatabase is map[string][]byte and the Key is the port Id.
 // In case we can't store the Port, we return the error causing it.
-// TODO: implement context reactions on Put method.
 func (s *shippingPortsProtocolServer) Put(ctx context.Context, shippingPort *shippingportsprotocol.ShippingPort) (*shippingportsprotocol.Ok, error) {
 	// byteEncoded is the []byte representation of the port.
 	// in case of error, the server will respond with the Ok{} stub, but with error.
@@ -57,8 +56,7 @@ func (s *shippingPortsProtocolServer) Put(ctx context.Context, shippingPort *shi
 	return &shippingportsprotocol.Ok{}, nil
 }
 
-// Get from memdatabase a port object by the Port Id. Unmarshal and respond.
-// TODO: implement context reactions on Get method.
+// Get from memdatabase a shippingPort object by the Port Id. Unmarshal and respond.
 func (s *shippingPortsProtocolServer) Get(ctx context.Context, shippingPortId *shippingportsprotocol.ShippingPortId) (*shippingportsprotocol.ShippingPort, error) {
 	// retrieve the marshaled binary for the Port Id.
 	// if not in the map/db, respond with nil and error

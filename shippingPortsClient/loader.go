@@ -70,7 +70,7 @@ func loadShippingPortsFromFileToServer(ctx context.Context, shippingPortsServerC
 	// lets range over blocks of lines that represents each shippingPort in the json
 	for {
 		if ctx.Err() != nil {
-			break
+			return
 		}
 		nextShippingPort, err := readNextShippingPort(reader)
 		if err != nil {
