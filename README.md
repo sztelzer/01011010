@@ -26,7 +26,7 @@ development. You just need to have docker.
 
 ## Public REST Interface
 
-**TLDR; There is only one public endpoint, by default in port 8080.**
+**TLDR; There is only one public endpoint, by default on port 8080.**
 Example to get Shipping Port with id `MUSIK` (this id is fictitious).
 
 ``` zsh
@@ -53,9 +53,9 @@ Example to get Shipping Port with id `MUSIK` (this id is fictitious).
 }
 ```
 
-In case you hit a malformed or non existent shipping port code, the response will be the status code `404 not found`. If
-you try other http method, will get `invalid request method`
-If something awful happens inside our service, it will respond some various `5xx` codes relative to the problem.
+In case you hit a malformed or non existent shipping port code, the response will be the status code `404 not found`.
+If you try other http method, will get `invalid request method`.
+If something awful happens inside our service, it will respond `5xx` codes relative to the problem.
 
 ## About the services
 
@@ -123,4 +123,4 @@ If the default value is not suitable, you can try to augment it.
 
 You find these options in the `docker-compose.yml`
 
-There you can also change the default ports of services.
+There you can also change the default ports for services.
