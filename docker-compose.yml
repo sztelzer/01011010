@@ -1,8 +1,18 @@
 version: "3.8"
 
 services:
-  client:
-    image: shippingportsclient
+  shippingportsserver:
+    build:
+      context: .
+      target: shippingportsserver
+    container_name: shippingportsserver_1
+    environment:
+      - SERVE_AT_ADDRESS=:50051
+
+  shippingportsclient:
+    build:
+      context: .
+      target: shippingportsclient
     container_name: shippingportsclient_1
     ports:
       - "8080:8080"
@@ -14,8 +24,3 @@ services:
       - SERVER_ADDRESS=shippingportsserver_1:50051
       - LOAD_SHIPPING_PORTS_PUTTERS=4
 
-  server:
-    image: shippingportsserver
-    container_name: shippingportsserver_1
-    environment:
-      - SERVE_AT_ADDRESS=:50051

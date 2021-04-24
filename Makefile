@@ -1,4 +1,3 @@
-ARCH=amd64
 BIND_PATH=~/shipping
 JSON_FILENAME=ports.json
 
@@ -16,18 +15,8 @@ test: tidy
 	cd shippingPortsServer; go test .
 	cd shippingPortsClient; go test .
 
-build: test
-	cd shippingPortsServer; env CGO_ENABLED=0 GOOS=linux GOARCH=$(ARCH) go build -o shippingPortsServerApp
-	cd shippingPortsClient; env CGO_ENABLED=0 GOOS=linux GOARCH=$(ARCH) go build -o shippingPortsClientApp
+docker:
+	docker build .
 
-docker: build
-	docker build ./shippingPortsServer -t shippingportsserver
-	docker build ./shippingPortsClient -t shippingportsclient
-
-run: docker
-	env BIND_PATH=$(BIND_PATH) JSON_FILENAME=$(JSON_FILENAME) docker compose up
-
-clean:
-	go clean
-	rm -f ./shippingPortsServer/shippingPortsServerApp
-	rm -f ./shippingPortsClient/shippingPortsClientApp
+run:
+	env BIND_PATH=$(BIND_PATH) JSON_FILENAME=$(JSON_FILENAME) docker compose up -d

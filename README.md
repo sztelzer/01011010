@@ -1,5 +1,7 @@
 # 01011010
 
+Prerequisites on your machine: Docker
+
 Fast start: clone this repository to your local machine.
 Run make with the path and filename of your Shipping Ports json file.
 
@@ -8,6 +10,14 @@ git clone https://github.com/sztelzer/01011010
 cd 01011010
 make BIND_PATH=~/shipping JSON_FILENAME=ports.json
 ```
+If you set a correct path for your json file (both vars) youl see this result after processing it:
+```
+Attaching to shippingportsclient_1, shippingportsserver_1
+shippingportsserver_1  | 2021/04/24 03:24:52 shippingPortsProtocolServer listening on port: :50051
+shippingportsclient_1  | 2021/04/24 03:24:53 successfully loaded 1632 shippingPorts from file to server in 363.06375ms
+```
+
+
 
 This is a set of two services running in docker compose. It's easy to run, but please attention to one detail:
 **You must specify a local directory to bind and filename from where the client service will read data to fill the database.**
