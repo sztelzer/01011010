@@ -3,10 +3,10 @@
 Fast start: clone this repository to your local machine.
 Run make with the path and filename of your Shipping Ports json file.
 
-```
-% git clone https://github.com/sztelzer/01011010
-% cd 01011010
-% make BIND_PATH=~/shipping JSON_FILENAME=ports.json
+``` zsh
+git clone https://github.com/sztelzer/01011010
+cd 01011010
+make BIND_PATH=~/shipping JSON_FILENAME=ports.json
 ```
 
 This is a set of two services running in docker compose. It's easy to run, but please attention to one detail:
