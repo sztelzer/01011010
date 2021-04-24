@@ -10,10 +10,12 @@ tidy: proto
 	cd shippingPortsProtocol; go mod tidy
 	cd shippingPortsServer; go mod tidy
 	cd shippingPortsClient;	go mod tidy
+	cd memdatabase;	go mod tidy
 
 test: tidy
 	cd shippingPortsServer; go test .
 	cd shippingPortsClient; go test .
+	cd memdatabase; go test .
 
 docker:
 	docker build .
