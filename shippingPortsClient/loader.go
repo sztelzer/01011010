@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"io"
 	"log"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"time"
 	
 	"github.com/sztelzer/01011010/shippingportsprotocol"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // savePortsFromFile reads a file of objects and saves each to server
@@ -103,13 +103,22 @@ func readNextShippingPort(reader *bufio.Reader) (*shippingportsprotocol.Shipping
 	shippingPortCodeFilter := regexp.MustCompile("[^A-Z0-9]")
 	id := shippingPortCodeFilter.ReplaceAllString(string(firstLine), "")
 	
+	// read each rune and control if is inside string and same level
+
+	
+	
+	
+	
+	
+	
 	block, err := reader.ReadBytes('}')
 	if err != nil {
 		return nil, err
 	}
 	
 	var shippingPort shippingportsprotocol.ShippingPort
-	err = json.Unmarshal(block, &shippingPort)
+	
+	err = protojson.Unmarshal(block, &shippingPort)
 	if err != nil {
 		return nil, err
 	}

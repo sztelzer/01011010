@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"reflect"
 	"strings"
 	"testing"
 	
@@ -70,8 +69,8 @@ func Test_readNextShippingPort(t *testing.T) {
 				t.Errorf("readNextShippingPort() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("readNextShippingPort() got = %v, want %v", got, tt.want)
+			if got.String() != tt.want.String() {
+				t.Errorf("readNextShippingPort() got = %v,\n want %v", got, tt.want)
 			}
 		})
 	}

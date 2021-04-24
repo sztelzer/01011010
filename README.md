@@ -57,7 +57,7 @@ In case you hit a malformed or non existent shipping port code, the response wil
 you try other http method, will get `invalid request method`
 If something awful happens inside our service, it will respond some various `5xx` codes relative to the problem.
 
-# About the services
+## About the services
 
 This project is a collection of two services meant to be used together, but not limited to, organized around a common
 protocol buffer and gRPC. It is built with some Go Modules responsible for each domain problem.
@@ -114,7 +114,7 @@ The JSON file format must be as follows, but with any size:
 Check the protocol file definition `shippingPortsProtocol/shippingPorts.proto` to understand the protocol and
 structures.
 
-## Some controls
+### Some controls
 
 You can control the quantity of LOAD_SHIPPING_PORTS_PUTTERS running. They read from a channel that is fed with objects
 read from the file, and send concurrent requests to the server. Too little (1) will probably result in poor performance.
