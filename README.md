@@ -4,41 +4,55 @@
 
 **TLDR; There is only one public endpoint: `GET /shippingports/:shippingPortId`**
 
-ShippingPorts is a really simple REST service from where you can ONLY retrieve information about shipping ports around the
-world by passing the unique identifier of the shipping port to the retrieval endpoint (that is the only one for now). 
+ShippingPortsClient is a simple REST service from where you can ONLY retrieve information about world shipping ports by 
+passing the unique identifier of it to the retrieval endpoint. 
 
 For example, if running on a local machine, you can retrieve information about the shipping port MUSIK hitting the 
-service address: `http://localhost:8080/shippingports/MUSIK` which yelds the following json encoded string on the 
+service address (GET) `http://localhost:8080/shippingports/MUSIK` which yelds the following json encoded string on the 
 response body and status code `200`.
 
 ``` json
 {
-    "MUSIK": {
-        "name": "Musik",
-        "city": "Musik",
-        "country": "Musicalis",
-        "alias": [],
-        "regions": [],
-        "coordinates": [
-            -1.00928,
-            -11.88878
-        ],
-        "province": "",
-        "timezone": "SharpOnTime",
-        "unlocs": [
-            "MUSIK"
-        ]
-    }
+    "id": "MUSIK",
+    "name": "Musik",
+    "city": "Musik",
+    "country": "Musicalis",
+    "alias": [],
+    "regions": [],
+    "coordinates": [
+        -1.00928,
+        -11.88878
+    ],
+    "province": "",
+    "timezone": "SharpOnTime",
+    "unlocs": [
+        "MUSIK"
+    ]
 }
 ```
 
-In case you hit a malformed or no existent shipping port code, the response will be the status code `404` `not found`.
+In case you hit a malformed or non existent shipping port code, the response will be the status code `404` `not found`. 
+If you try other http method, will get `invalid request method`
 If something awful happens inside our service, it will respond some various `5xx` codes relative to the problem.
 
 
 ## Running the service
 
-**TLDR; pull the docker compose image and run.**
+**TLDR; having docker and make on your system run make at the root directory of this repo.**
+```
+01011010 % make
+```
+The commands in make are cascading dependent, each running all others before:
+- `make proto` Update the protocol buffers packages
+- `make tidy` go mod tidy all modules
+- `make test` go test all tests
+- `make build` build go apps
+- `make docker` build docker images
+- `make run` run docker compose up
+
+`% make == % make all == % make run`
+
+So, just make.
 
 This project is a collection of two services meant to be used together, organized around common protocol buffers and
 interconnected through gRPC. It is built spanning many Go Modules, but don't frail. It's quite simple.
@@ -109,6 +123,7 @@ The JSON file format must be as follows, with any size:
 ## Annotations
 
 Most important:
++ mod database
 + review readmes
 
 Bonus points:
@@ -122,4 +137,3 @@ Done
 + graceful shutdown
 + test rest handler 
 + test file block reader  
-+ mod database
