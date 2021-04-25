@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.26.0
 // 	protoc        v3.14.0
-// source: shippingPortsProtocol/shippingPorts.proto
+// source: shippingportsprotocol/shippingports.proto
 
 package shippingportsprotocol
 
@@ -42,7 +42,7 @@ type ShippingPort struct {
 func (x *ShippingPort) Reset() {
 	*x = ShippingPort{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[0]
+		mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -55,7 +55,7 @@ func (x *ShippingPort) String() string {
 func (*ShippingPort) ProtoMessage() {}
 
 func (x *ShippingPort) ProtoReflect() protoreflect.Message {
-	mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[0]
+	mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +68,7 @@ func (x *ShippingPort) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShippingPort.ProtoReflect.Descriptor instead.
 func (*ShippingPort) Descriptor() ([]byte, []int) {
-	return file_shippingPortsProtocol_shippingPorts_proto_rawDescGZIP(), []int{0}
+	return file_shippingportsprotocol_shippingports_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ShippingPort) GetId() string {
@@ -160,7 +160,7 @@ type ShippingPortId struct {
 func (x *ShippingPortId) Reset() {
 	*x = ShippingPortId{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[1]
+		mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -173,7 +173,7 @@ func (x *ShippingPortId) String() string {
 func (*ShippingPortId) ProtoMessage() {}
 
 func (x *ShippingPortId) ProtoReflect() protoreflect.Message {
-	mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[1]
+	mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -186,7 +186,7 @@ func (x *ShippingPortId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShippingPortId.ProtoReflect.Descriptor instead.
 func (*ShippingPortId) Descriptor() ([]byte, []int) {
-	return file_shippingPortsProtocol_shippingPorts_proto_rawDescGZIP(), []int{1}
+	return file_shippingportsprotocol_shippingports_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ShippingPortId) GetId() string {
@@ -206,7 +206,7 @@ type Ok struct {
 func (x *Ok) Reset() {
 	*x = Ok{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[2]
+		mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -219,7 +219,7 @@ func (x *Ok) String() string {
 func (*Ok) ProtoMessage() {}
 
 func (x *Ok) ProtoReflect() protoreflect.Message {
-	mi := &file_shippingPortsProtocol_shippingPorts_proto_msgTypes[2]
+	mi := &file_shippingportsprotocol_shippingports_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -232,15 +232,15 @@ func (x *Ok) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ok.ProtoReflect.Descriptor instead.
 func (*Ok) Descriptor() ([]byte, []int) {
-	return file_shippingPortsProtocol_shippingPorts_proto_rawDescGZIP(), []int{2}
+	return file_shippingportsprotocol_shippingports_proto_rawDescGZIP(), []int{2}
 }
 
-var File_shippingPortsProtocol_shippingPorts_proto protoreflect.FileDescriptor
+var File_shippingportsprotocol_shippingports_proto protoreflect.FileDescriptor
 
-var file_shippingPortsProtocol_shippingPorts_proto_rawDesc = []byte{
-	0x0a, 0x29, 0x73, 0x68, 0x69, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x50, 0x6f, 0x72, 0x74, 0x73, 0x50,
+var file_shippingportsprotocol_shippingports_proto_rawDesc = []byte{
+	0x0a, 0x29, 0x73, 0x68, 0x69, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x70, 0x6f, 0x72, 0x74, 0x73, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x73, 0x68, 0x69, 0x70, 0x70, 0x69, 0x6e, 0x67,
-	0x50, 0x6f, 0x72, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x73, 0x68, 0x69,
+	0x70, 0x6f, 0x72, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x73, 0x68, 0x69,
 	0x70, 0x70, 0x69, 0x6e, 0x67, 0x70, 0x6f, 0x72, 0x74, 0x73, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63,
 	0x6f, 0x6c, 0x22, 0x96, 0x02, 0x0a, 0x0c, 0x53, 0x68, 0x69, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x50,
 	0x6f, 0x72, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
@@ -281,24 +281,24 @@ var file_shippingPortsProtocol_shippingPorts_proto_rawDesc = []byte{
 }
 
 var (
-	file_shippingPortsProtocol_shippingPorts_proto_rawDescOnce sync.Once
-	file_shippingPortsProtocol_shippingPorts_proto_rawDescData = file_shippingPortsProtocol_shippingPorts_proto_rawDesc
+	file_shippingportsprotocol_shippingports_proto_rawDescOnce sync.Once
+	file_shippingportsprotocol_shippingports_proto_rawDescData = file_shippingportsprotocol_shippingports_proto_rawDesc
 )
 
-func file_shippingPortsProtocol_shippingPorts_proto_rawDescGZIP() []byte {
-	file_shippingPortsProtocol_shippingPorts_proto_rawDescOnce.Do(func() {
-		file_shippingPortsProtocol_shippingPorts_proto_rawDescData = protoimpl.X.CompressGZIP(file_shippingPortsProtocol_shippingPorts_proto_rawDescData)
+func file_shippingportsprotocol_shippingports_proto_rawDescGZIP() []byte {
+	file_shippingportsprotocol_shippingports_proto_rawDescOnce.Do(func() {
+		file_shippingportsprotocol_shippingports_proto_rawDescData = protoimpl.X.CompressGZIP(file_shippingportsprotocol_shippingports_proto_rawDescData)
 	})
-	return file_shippingPortsProtocol_shippingPorts_proto_rawDescData
+	return file_shippingportsprotocol_shippingports_proto_rawDescData
 }
 
-var file_shippingPortsProtocol_shippingPorts_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_shippingPortsProtocol_shippingPorts_proto_goTypes = []interface{}{
+var file_shippingportsprotocol_shippingports_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_shippingportsprotocol_shippingports_proto_goTypes = []interface{}{
 	(*ShippingPort)(nil),   // 0: shippingportsprotocol.ShippingPort
 	(*ShippingPortId)(nil), // 1: shippingportsprotocol.ShippingPortId
 	(*Ok)(nil),             // 2: shippingportsprotocol.Ok
 }
-var file_shippingPortsProtocol_shippingPorts_proto_depIdxs = []int32{
+var file_shippingportsprotocol_shippingports_proto_depIdxs = []int32{
 	0, // 0: shippingportsprotocol.ShippingPortsServer.Put:input_type -> shippingportsprotocol.ShippingPort
 	1, // 1: shippingportsprotocol.ShippingPortsServer.Get:input_type -> shippingportsprotocol.ShippingPortId
 	2, // 2: shippingportsprotocol.ShippingPortsServer.Put:output_type -> shippingportsprotocol.Ok
@@ -310,13 +310,13 @@ var file_shippingPortsProtocol_shippingPorts_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_shippingPortsProtocol_shippingPorts_proto_init() }
-func file_shippingPortsProtocol_shippingPorts_proto_init() {
-	if File_shippingPortsProtocol_shippingPorts_proto != nil {
+func init() { file_shippingportsprotocol_shippingports_proto_init() }
+func file_shippingportsprotocol_shippingports_proto_init() {
+	if File_shippingportsprotocol_shippingports_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_shippingPortsProtocol_shippingPorts_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_shippingportsprotocol_shippingports_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ShippingPort); i {
 			case 0:
 				return &v.state
@@ -328,7 +328,7 @@ func file_shippingPortsProtocol_shippingPorts_proto_init() {
 				return nil
 			}
 		}
-		file_shippingPortsProtocol_shippingPorts_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_shippingportsprotocol_shippingports_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ShippingPortId); i {
 			case 0:
 				return &v.state
@@ -340,7 +340,7 @@ func file_shippingPortsProtocol_shippingPorts_proto_init() {
 				return nil
 			}
 		}
-		file_shippingPortsProtocol_shippingPorts_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_shippingportsprotocol_shippingports_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Ok); i {
 			case 0:
 				return &v.state
@@ -357,18 +357,18 @@ func file_shippingPortsProtocol_shippingPorts_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_shippingPortsProtocol_shippingPorts_proto_rawDesc,
+			RawDescriptor: file_shippingportsprotocol_shippingports_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_shippingPortsProtocol_shippingPorts_proto_goTypes,
-		DependencyIndexes: file_shippingPortsProtocol_shippingPorts_proto_depIdxs,
-		MessageInfos:      file_shippingPortsProtocol_shippingPorts_proto_msgTypes,
+		GoTypes:           file_shippingportsprotocol_shippingports_proto_goTypes,
+		DependencyIndexes: file_shippingportsprotocol_shippingports_proto_depIdxs,
+		MessageInfos:      file_shippingportsprotocol_shippingports_proto_msgTypes,
 	}.Build()
-	File_shippingPortsProtocol_shippingPorts_proto = out.File
-	file_shippingPortsProtocol_shippingPorts_proto_rawDesc = nil
-	file_shippingPortsProtocol_shippingPorts_proto_goTypes = nil
-	file_shippingPortsProtocol_shippingPorts_proto_depIdxs = nil
+	File_shippingportsprotocol_shippingports_proto = out.File
+	file_shippingportsprotocol_shippingports_proto_rawDesc = nil
+	file_shippingportsprotocol_shippingports_proto_goTypes = nil
+	file_shippingportsprotocol_shippingports_proto_depIdxs = nil
 }

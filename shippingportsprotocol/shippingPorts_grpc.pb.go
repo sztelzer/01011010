@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.1.0
 // - protoc             v3.14.0
-// source: shippingPortsProtocol/shippingPorts.proto
+// source: shippingportsprotocol/shippingports.proto
 
 package shippingportsprotocol
 
@@ -141,5 +141,5 @@ var ShippingPortsServer_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "shippingPortsProtocol/shippingPorts.proto",
+	Metadata: "shippingportsprotocol/shippingports.proto",
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"reflect"
 	"testing"
-	
+
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 )
 

@@ -15,5 +15,5 @@
 # vendor/
 
 .idea
-shippingPortsClient/ports.json
+shippingportsclient/ports.json
 *App

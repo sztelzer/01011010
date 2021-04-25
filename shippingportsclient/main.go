@@ -7,12 +7,12 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	
+
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
 )
 
-// shippingPortsServerAddress is the default connection string to the gRPC shippingPortsServer
+// shippingPortsServerAddress is the default connection string to the gRPC shippingportsserver
 // It may be changed by the environment variable SERVER_ADDRESS
 var shippingPortsServerAddress = ":50051"
 

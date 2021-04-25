@@ -10,35 +10,35 @@ ENV GO111MODULE=on \
 WORKDIR /build
 
 # Copy all modules to /build (we need all as local dependencies)
-COPY memdatabase/ ./memdatabase/
-COPY shippingPortsClient/ ./shippingPortsClient/
-COPY shippingPortsProtocol/ ./shippingPortsProtocol/
-COPY shippingPortsServer/ ./shippingPortsServer/
+COPY shippingportsmemdatabase/ ./shippingportsmemdatabase/
+COPY shippingportsclient/ ./shippingportsclient/
+COPY shippingportsprotocol/ ./shippingportsprotocol/
+COPY shippingportsserver/ ./shippingportsserver/
 
 # build clientApp
-WORKDIR /build/shippingPortsClient
+WORKDIR /build/shippingportsclient
 RUN go mod download
-RUN go build -o /dist/shippingPortsClientApp .
+RUN go build -o /dist/shippingportsclientapp .
 
 # build serverApp
-WORKDIR /build/shippingPortsServer
+WORKDIR /build/shippingportsserver
 RUN go mod download
-RUN go build -o /dist/shippingPortsServerApp .
+RUN go build -o /dist/shippingportsserverapp .
 
 
 FROM scratch AS shippingportsclient
 
-COPY --from=builder /dist/shippingPortsClientApp /
+COPY --from=builder /dist/shippingportsclientapp /
 
 EXPOSE 8080
 
-ENTRYPOINT ["./shippingPortsClientApp"]
+ENTRYPOINT ["./shippingportsclientapp"]
 
 
 FROM scratch AS shippingportsserver
 
-COPY --from=builder /dist/shippingPortsServerApp /
+COPY --from=builder /dist/shippingportsserverapp /
 
 EXPOSE 50051
 
-ENTRYPOINT ["./shippingPortsServerApp"]
+ENTRYPOINT ["./shippingportsserverapp"]

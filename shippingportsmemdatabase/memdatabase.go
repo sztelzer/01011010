@@ -1,6 +1,6 @@
 // Package memdatabase implements a simple memory key value storage.
-// One should get a new memdatabase instance with memdatabase.New()
-package memdatabase
+// One should get a new memdatabase instance with shippingPortsMemDatabase.New()
+package shippingportsmemdatabase
 
 import (
 	"errors"

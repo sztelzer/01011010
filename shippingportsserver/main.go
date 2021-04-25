@@ -6,9 +6,9 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	
-	"github.com/sztelzer/01011010/memdatabase"
-	
+
+	"github.com/sztelzer/01011010/shippingportsmemdatabase"
+
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -19,7 +19,7 @@ var shippingPortsServerAddress = ":50051"
 
 // shippingPortsDatabase is the memdatabase instance that will be used during the life time of the server.
 // It is a in memory memdatabase and it does not persist state.
-var shippingPortsDatabase = memdatabase.New()
+var shippingPortsDatabase = shippingportsmemdatabase.New()
 
 func init() {
 	// just check if non default shippingPortsProtocolServer port was given in the environment (usually Dockerfile or docker-compose.yaml)

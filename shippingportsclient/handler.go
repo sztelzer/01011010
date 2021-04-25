@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-	
+
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/protobuf/encoding/protojson"
 )

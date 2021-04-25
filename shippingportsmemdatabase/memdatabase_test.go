@@ -1,4 +1,4 @@
-package memdatabase
+package shippingportsmemdatabase
 
 import (
 	"reflect"
