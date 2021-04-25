@@ -13,11 +13,11 @@ tidy: proto
 	cd memdatabase;	go mod tidy
 
 test: tidy
-	cd shippingPortsServer; go test .
-	cd shippingPortsClient; go test .
-	cd memdatabase; go test .
+	cd shippingPortsServer; go test ./... -v
+	cd shippingPortsClient; go test ./... -v
+	cd memdatabase; go test ./... -v
 
-docker:
+docker: test
 	docker build .
 
 run:
