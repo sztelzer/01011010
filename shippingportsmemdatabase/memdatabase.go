@@ -4,7 +4,6 @@ package shippingportsmemdatabase
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 )
 
@@ -12,31 +11,44 @@ import (
 // We use byte slice as the best general format for RPC struct types marshalling.
 // The key string is the id of port.
 type ShippingPortsDatabase struct {
+	// store have the data
 	store map[string][]byte
+	// index keys by position (order of arrival)
+	index []string
+	// reverseIndex have the key position in index to facilitate removal
+	reverseIndex map[string]int
+	// mu is a mutex to lock access to database while it is being accessed by one of the following functions
 	mu sync.Mutex
 }
 
 // New returns a new instance of a shippingPorts memdatabase
 func New() *ShippingPortsDatabase {
-	return &ShippingPortsDatabase{store: make(map[string][]byte)}
+	return &ShippingPortsDatabase{
+		store: make(map[string][]byte),
+		index: make([]string, 0, 1024),
+		reverseIndex: make(map[string]int),
+	}
 }
 
 // Put store value under key index
-func (spd *ShippingPortsDatabase) Put(key string, value *[]byte) error {
+func (spd *ShippingPortsDatabase) Put(key string, value *[]byte) {
 	spd.mu.Lock()
 	defer spd.mu.Unlock()
+
+	// store
 	spd.store[key] = *value
-	// this is just a self check, should be impossible have this error
-	if _, ok := spd.store[key]; !ok {
-		return errors.New(fmt.Sprintf("could not store value under key %s", key))
-	}
-	return nil
+
+	// index
+	spd.index = append(spd.index, key)
+
+	// reverseIndex
+	spd.reverseIndex[key] = len(spd.index)
 }
 
 // Get retrieves the value under key, or returns error not nil if not found
 func (spd *ShippingPortsDatabase) Get(key string) (*[]byte, error) {
 	spd.mu.Lock()
-	spd.mu.Unlock()
+	defer spd.mu.Unlock()
 	value, ok := spd.store[key]
 	if !ok {
 		return nil, errors.New("not found")
@@ -48,6 +60,8 @@ func (spd *ShippingPortsDatabase) Get(key string) (*[]byte, error) {
 // Returning an error could be misleading
 func (spd *ShippingPortsDatabase) Delete(key string) {
 	spd.mu.Lock()
-	spd.mu.Unlock()
+	defer spd.mu.Unlock()
 	delete(spd.store, key)
 }
+
+
