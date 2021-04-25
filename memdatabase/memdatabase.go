@@ -102,17 +102,17 @@ func (db *Memdatabase) Delete(key string) {
 	delete(db.reverseIndex, key)
 }
 
-func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, error) {
+func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, int, bool, error) {
 	var result = make([][]byte, 0)
 
 	// check if offset is inside length of slice
-	if offset > len(db.index) {
-		return result, errors.New("offset out of database bounds")
+	if offset > len(db.index)-1 {
+		return result, 0, false, errors.New("offset out of database bounds")
 	}
 
-	for i := offset; i < count; i++ {
+	for i := offset; i < offset+count; i++ {
 		// don't try to read past end
-		if i > len(db.index) {
+		if i >= len(db.index) {
 			break
 		}
 		// if index position was deleted, skip it
@@ -127,9 +127,9 @@ func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, error) {
 		if value, ok := db.store[key]; ok {
 			result = append(result, value)
 		} else {
-			return result, errors.New("database index corrupted, please reindex")
+			return result, len(result), offset+len(result) < len(db.store), errors.New("database index corrupted, please reindex")
 		}
 	}
 
-	return result, nil
+	return result, len(result), offset+len(result) < len(db.store), nil
 }

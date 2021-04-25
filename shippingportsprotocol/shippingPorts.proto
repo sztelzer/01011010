@@ -26,6 +26,18 @@ message ShippingPortId {
 // message Ok is a stub for when we need to signal some empty response
 message Ok {}
 
+// message Pagination defines offset and size of GetMany requests
+message Pagination {
+  int32 offset = 1;
+  int32 size = 2;
+}
+
+// message ManyShippingPorts is an array of ShippingPorts for GetMany requests
+message ManyShippingPorts {
+  repeated ShippingPort shippingports = 1;
+}
+
+
 // this is the main communication protocol definition between client and server
 // these methods are implemented on the server and consumed on clients
 service ShippingPortsServer {
@@ -34,6 +46,9 @@ service ShippingPortsServer {
 
   // Request a ShippingPort by its id
   rpc Get (ShippingPortId) returns (ShippingPort) {}
+
+  // Request many ShippingPorts
+  rpc GetMany (Pagination) returns (ManyShippingPorts) {}
 
 }
 

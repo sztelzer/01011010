@@ -26,6 +26,8 @@ type ShippingPortsServerClient interface {
 	Put(ctx context.Context, in *ShippingPort, opts ...grpc.CallOption) (*Ok, error)
 	// Request a ShippingPort by its id
 	Get(ctx context.Context, in *ShippingPortId, opts ...grpc.CallOption) (*ShippingPort, error)
+	// Request many ShippingPorts
+	GetMany(ctx context.Context, in *Pagination, opts ...grpc.CallOption) (*ManyShippingPorts, error)
 }
 
 type shippingPortsServerClient struct {
@@ -54,6 +56,15 @@ func (c *shippingPortsServerClient) Get(ctx context.Context, in *ShippingPortId,
 	return out, nil
 }
 
+func (c *shippingPortsServerClient) GetMany(ctx context.Context, in *Pagination, opts ...grpc.CallOption) (*ManyShippingPorts, error) {
+	out := new(ManyShippingPorts)
+	err := c.cc.Invoke(ctx, "/shippingportsprotocol.ShippingPortsServer/GetMany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ShippingPortsServerServer is the server API for ShippingPortsServer service.
 // All implementations must embed UnimplementedShippingPortsServerServer
 // for forward compatibility
@@ -62,6 +73,8 @@ type ShippingPortsServerServer interface {
 	Put(context.Context, *ShippingPort) (*Ok, error)
 	// Request a ShippingPort by its id
 	Get(context.Context, *ShippingPortId) (*ShippingPort, error)
+	// Request many ShippingPorts
+	GetMany(context.Context, *Pagination) (*ManyShippingPorts, error)
 	mustEmbedUnimplementedShippingPortsServerServer()
 }
 
@@ -74,6 +87,9 @@ func (UnimplementedShippingPortsServerServer) Put(context.Context, *ShippingPort
 }
 func (UnimplementedShippingPortsServerServer) Get(context.Context, *ShippingPortId) (*ShippingPort, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedShippingPortsServerServer) GetMany(context.Context, *Pagination) (*ManyShippingPorts, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMany not implemented")
 }
 func (UnimplementedShippingPortsServerServer) mustEmbedUnimplementedShippingPortsServerServer() {}
 
@@ -124,6 +140,24 @@ func _ShippingPortsServer_Get_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ShippingPortsServer_GetMany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Pagination)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ShippingPortsServerServer).GetMany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/shippingportsprotocol.ShippingPortsServer/GetMany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ShippingPortsServerServer).GetMany(ctx, req.(*Pagination))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ShippingPortsServer_ServiceDesc is the grpc.ServiceDesc for ShippingPortsServer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -138,6 +172,10 @@ var ShippingPortsServer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _ShippingPortsServer_Get_Handler,
+		},
+		{
+			MethodName: "GetMany",
+			Handler:    _ShippingPortsServer_GetMany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
