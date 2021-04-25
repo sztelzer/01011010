@@ -1,28 +1,31 @@
-package shippingportsmemdatabase
+package memdatabase
 
 import (
 	"reflect"
 	"testing"
 )
 
-var testDatabase = New()
+var testDatabase = New(1024)
 var someBytes = []byte("some string")
 
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
-		want *ShippingPortsDatabase
+		want *Memdatabase
 	}{
 		{
-			name: "new memdatabase",
-			want: &ShippingPortsDatabase{
+			name: "new Memdatabase",
+			want: &Memdatabase{
 				store: make(map[string][]byte),
+				index: make([]string, 0, 1024),
+				reverseIndex: make(map[string]int),
+				max: 1024,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(); !reflect.DeepEqual(got, tt.want) {
+			if got := New(1024); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
@@ -35,7 +38,7 @@ func TestShippingPortsDatabase_Put(t *testing.T) {
 	}
 	type args struct {
 		key   string
-		value *[]byte
+		value []byte
 	}
 	tests := []struct {
 		name    string
@@ -47,7 +50,7 @@ func TestShippingPortsDatabase_Put(t *testing.T) {
 			name: "MyKey",
 			args: args{
 				key:   "MyKey",
-				value: &someBytes,
+				value: someBytes,
 			},
 			wantErr: false,
 		},
@@ -55,9 +58,17 @@ func TestShippingPortsDatabase_Put(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			spd := testDatabase
-			if err := spd.Put(tt.args.key, tt.args.value); (err != nil) != tt.wantErr {
-				t.Errorf("Put() error = %v, wantErr %v", err, tt.wantErr)
+			spd.Put(tt.args.key, tt.args.value)
+
+			value, err := spd.Get(tt.args.key)
+			if err != nil {
+				t.Error(err)
 			}
+			if string(value) != string(tt.args.value) {
+				t.Errorf("Get() got = %v, want %v", string(value), string(tt.args.value))
+			}
+
+
 		})
 	}
 }
@@ -73,7 +84,7 @@ func TestShippingPortsDatabase_Get(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *[]byte
+		want    []byte
 		wantErr bool
 	}{
 		{
@@ -81,7 +92,7 @@ func TestShippingPortsDatabase_Get(t *testing.T) {
 			args: args{
 				key: "MyKey",
 			},
-			want:    &someBytes,
+			want:    someBytes,
 			wantErr: false,
 		},
 	}

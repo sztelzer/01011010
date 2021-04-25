@@ -6,8 +6,9 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 
-	"github.com/sztelzer/01011010/shippingportsmemdatabase"
+	"github.com/sztelzer/01011010/memdatabase"
 
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
@@ -17,16 +18,33 @@ import (
 // shippingPortsServerAddress is the default shippingPortsProtocolServer address, but it may be changed by SERVE_AT_ADDRESS env variable.
 var shippingPortsServerAddress = ":50051"
 
+// default maxsize of 100 Mebibytes in memory.
+var maxDatabaseSize = 1024 * 1024 * 100
+
 // shippingPortsDatabase is the memdatabase instance that will be used during the life time of the server.
 // It is a in memory memdatabase and it does not persist state.
-var shippingPortsDatabase = shippingportsmemdatabase.New()
+var shippingPortsDatabase *memdatabase.Memdatabase
 
 func init() {
 	// just check if non default shippingPortsProtocolServer port was given in the environment (usually Dockerfile or docker-compose.yaml)
 	if envPortsServerAddress, ok := os.LookupEnv("SERVE_AT_ADDRESS"); ok {
 		shippingPortsServerAddress = envPortsServerAddress
 	}
+
+	// check if we should use a different database size
+	if maxSizeMbStr, ok := os.LookupEnv("DATABASE_MAX_SIZE_MB"); ok {
+		maxSizeMbInt, err := strconv.Atoi(maxSizeMbStr)
+		if err != nil {
+			log.Println("invalid value for DATABASE_MAX_SIZE_MB, please use integer, defaulting to 100 Mebibytes")
+		} else {
+			maxDatabaseSize = maxSizeMbInt * 1024 * 1024
+		}
+	}
+
+	shippingPortsDatabase = memdatabase.New(maxDatabaseSize)
 }
+
+
 
 // type shippingPortsProtocolServer implements (embeds) the ports gRPC shippingPortsProtocolServer interface.
 // We need to give it the ports.UnimplementedPortsServer to implement the expected methods.
@@ -47,11 +65,11 @@ func (s *shippingPortsProtocolServer) Put(ctx context.Context, shippingPort *shi
 	}
 	
 	// save it, overwrite if already exists.
-	err = shippingPortsDatabase.Put(shippingPort.GetId(), &byteEncodedShippingPort)
+	err = shippingPortsDatabase.Put(shippingPort.GetId(), byteEncodedShippingPort)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// very well, respond Ok, no errors.
 	return &shippingportsprotocol.Ok{}, nil
 }
@@ -68,7 +86,7 @@ func (s *shippingPortsProtocolServer) Get(ctx context.Context, shippingPortId *s
 	// lets unmarshal the []byte back to a port object.
 	// in case of error, respond with the error.
 	var shippingPort shippingportsprotocol.ShippingPort
-	err = proto.Unmarshal(*byteEncodedShippingPort, &shippingPort)
+	err = proto.Unmarshal(byteEncodedShippingPort, &shippingPort)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +113,6 @@ func main() {
 	grpcServer := grpc.NewServer()
 	defer grpcServer.GracefulStop()
 	// register the shippingPortsProtocolServer type/methods to the grpcServer
-	// TODO: remove 'Server' from service definition? For Service?
 	shippingportsprotocol.RegisterShippingPortsServerServer(grpcServer, &shippingPortsProtocolServer{})
 	
 	go func() {

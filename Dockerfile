@@ -10,7 +10,7 @@ ENV GO111MODULE=on \
 WORKDIR /build
 
 # Copy all modules to /build (we need all as local dependencies)
-COPY shippingportsmemdatabase/ ./shippingportsmemdatabase/
+COPY memdatabase/ ./memdatabase/
 COPY shippingportsclient/ ./shippingportsclient/
 COPY shippingportsprotocol/ ./shippingportsprotocol/
 COPY shippingportsserver/ ./shippingportsserver/

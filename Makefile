@@ -7,15 +7,15 @@ proto:
 	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative shippingportsprotocol/shippingports.proto
 
 tidy: proto
+	cd memdatabase; go mod tidy
 	cd shippingportsprotocol; go mod tidy
 	cd shippingportsserver; go mod tidy
 	cd shippingportsclient;	go mod tidy
-	cd shippingportsmemdatabase; go mod tidy
 
 test: tidy
-	cd shippingPortsServer; go test ./... -v
-	cd shippingPortsClient; go test ./... -v
-	cd shippingportsmemdatabase; go test ./... -v
+	cd memdatabase; go test ./... -v
+	cd shippingportsserver; go test ./... -v
+	cd shippingportsclient; go test ./... -v
 
 docker: test
 	docker build .
