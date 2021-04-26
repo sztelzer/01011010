@@ -81,7 +81,9 @@ func main() {
 		log.Println(err)
 		cancel()
 	}()
-	
+	// success, log the moment
+	log.Printf("shippingPortsClient started")
+
 	// Graceful shutdown
 	select {
 	case <-ctx.Done():

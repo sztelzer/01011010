@@ -74,8 +74,7 @@ func Test_nextBlock(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			reader := bufio.NewReader(bytes.NewReader([]byte(tt.source)))
-			got, err := NextBlock(reader, tt.args.opener, 512)
-
+			got, _, err := NextBlock(reader, tt.args.opener, 512, 0)
 			if err != nil {
 				t.Error(err)
 			}

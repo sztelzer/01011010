@@ -33,13 +33,17 @@ func loadShippingPortsFromFileToServer(ctx context.Context, shippingPortsServerC
 	// we will use only one reader, but could be many
 	reader := bufio.NewReader(f)
 
+	// var counter will have the position of reader to use as update order
+	var counter int
+
 	// jump to inside of external block
-	_, err = reader.ReadBytes('{')
+	discard, err := reader.ReadBytes('{')
 	if err != nil {
 		log.Println(err)
 		// if we can't go to inside, don't continue
 		return
 	}
+	counter = len(discard)
 
 	// now we can set some vars
 
@@ -93,11 +97,13 @@ func loadShippingPortsFromFileToServer(ctx context.Context, shippingPortsServerC
 		// get next valid block.
 		// it will continue retrying fit an object right if some error happens in reading.
 		// if we reach end of file, stop readings
-		nextShippingPort, err := readNextShippingPort(reader)
+		var nextShippingPort *shippingportsprotocol.ShippingPort
+		nextShippingPort, counter, err = readNextShippingPort(reader, counter)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
+			log.Printf("bytes read: %d", counter)
 			log.Println(err)
 			continue
 		}
@@ -117,27 +123,36 @@ func loadShippingPortsFromFileToServer(ctx context.Context, shippingPortsServerC
 
 // readNextShippingPort advances one block of lines that represents each shippingPort and returns it
 // As reader is a pointer, the position is stateful
-func readNextShippingPort(reader *bufio.Reader) (*shippingportsprotocol.ShippingPort, error) {
+func readNextShippingPort(reader *bufio.Reader, counter int) (*shippingportsprotocol.ShippingPort, int, error) {
 	// we should be near next property as shippingPort id
-	id, err := blockreader.NextBlock(reader, '"', 16)
+	var id []byte
+	var err error
+
+	id, counter, err = blockreader.NextBlock(reader, '"', 16, counter)
 	if err != nil {
-		return nil, err
+		return nil, counter, err
 	}
 
+	updateOrder := counter - len(id)
+
 	// after id must be the property block
-	block, err := blockreader.NextBlock(reader, '{', 512)
+	var block []byte
+	block, counter, err = blockreader.NextBlock(reader, '{', 512, counter)
 	if err != nil {
-		return nil, err
+		return nil, counter, err
 	}
 
 	// unmarshal to protocol ShippingPort using the protojson unmarshal function
 	var shippingPort shippingportsprotocol.ShippingPort
 	err = protojson.Unmarshal(block, &shippingPort)
 	if err != nil {
-		return nil, err
+		return nil, counter, err
 	}
 	// set the outside id on the type
 	shippingPort.Id = string(id[1 : len(id)-1])
 
-	return &shippingPort, nil
+	// set update position
+	shippingPort.Order = int32(updateOrder)
+
+	return &shippingPort, counter, nil
 }

@@ -26,8 +26,22 @@ development. You just need to have docker.
 
 ## Public REST Interface
 
-**TLDR; There is only one public endpoint, by default on port 8080.**
-Example to get Shipping Port with id `MUSIK` (this id is fictitious).
+### GET MANY
+GET all shipping ports with default start pagination (100 items):
+``` zsh
+% curl -X GET localhost:8080/shippingports
+```
+
+GET all shipping ports with specific pagination:
+``` zsh
+% curl -X GET localhost:8080/shippingports?page=10&size=10
+```
+
+### GET ONE
+
+All Shipping Ports IDs are endpoints.
+
+GET specific Shipping Port with id `MUSIK` (this id is fictitious).
 
 ``` zsh
 % curl -X GET localhost:8080/shippingports/MUSIK

@@ -52,6 +52,7 @@ func Test_readNextShippingPort(t *testing.T) {
 				Timezone:    "Asia/Dubai",
 				Unlocs:      []string{"AEDXB"},
 				Code:        "52005",
+				Order:       1,
 			},
 			wantErr: false,
 		},
@@ -61,7 +62,7 @@ func Test_readNextShippingPort(t *testing.T) {
 
 			reader := bufio.NewReader(strings.NewReader(tt.source))
 
-			got, err := readNextShippingPort(reader)
+			got, _, err := readNextShippingPort(reader, 0)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("readNextShippingPort() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -72,4 +73,3 @@ func Test_readNextShippingPort(t *testing.T) {
 		})
 	}
 }
-

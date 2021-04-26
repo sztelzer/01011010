@@ -16,6 +16,7 @@ message ShippingPort {
   string timezone = 9;
   repeated string unlocs = 10;
   string code = 11;
+  int32 order = 12;
 }
 
 // message ShippingPortId transports just one id, used on the Get method
@@ -35,6 +36,8 @@ message Pagination {
 // message ManyShippingPorts is an array of ShippingPorts for GetMany requests
 message ManyShippingPorts {
   repeated ShippingPort shippingports = 1;
+  int32 count = 2;
+  bool more = 3;
 }
 
 

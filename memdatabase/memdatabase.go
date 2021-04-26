@@ -110,14 +110,23 @@ func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, int, bool, erro
 		return result, 0, false, errors.New("offset out of database bounds")
 	}
 
-	for i := offset; i < offset+count; i++ {
+	if offset < 0 {
+		offset = 0
+	}
+
+	if count < 1 {
+		count = 100
+	}
+
+	var skips int
+	for i := offset; i < offset+count+skips; i++ {
 		// don't try to read past end
 		if i >= len(db.index) {
 			break
 		}
 		// if index position was deleted, skip it
 		if db.index[i] == "" {
-			i--
+			skips++
 			continue
 		}
 		// get the key from index

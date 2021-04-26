@@ -18,27 +18,31 @@ var closers = map[byte]byte{
 // It returns any error encountered reading input reader, including io.EOF if reached, because it should not reach EOF.
 // It stops reading from reader as soon as it finds the right closer.
 // It is linear in time, using recursion but only one buffer writer.
-func NextBlock(reader *bufio.Reader, open byte, bufferSize int) ([]byte, error) {
+func NextBlock(reader *bufio.Reader, open byte, bufferSize int, counter int) ([]byte, int, error) {
 	slice := make([]byte, 0, bufferSize)
 	writer := bytes.NewBuffer(slice)
 
 	// read and discard up to delimiter open
-	_, err := reader.ReadBytes(open)
+	discard, err := reader.ReadBytes(open)
 	if err != nil {
-		return nil, err
+		return nil, counter, err
 	}
+	counter += len(discard)
 
 	_ = writer.WriteByte(open)
-	toBlockCloser(reader, closers[open], writer)
-	return writer.Bytes(), nil
+	counter, err = toBlockCloser(reader, closers[open], writer, counter)
+	return writer.Bytes(), counter, err
 }
 
 // toBlockCloser expects to be inside the block that it must find the exit. This is for more efficient recursion.
-func toBlockCloser(reader *bufio.Reader, closer byte, writer *bytes.Buffer) error {
+func toBlockCloser(reader *bufio.Reader, closer byte, writer *bytes.Buffer, counter int) (int, error) {
+	var b byte
+	var err error
+
 	for {
-		b, err := copyByte(reader, writer)
+		b, counter, err = copyByte(reader, writer, counter)
 		if err != nil {
-			return err
+			return counter, err
 		}
 
 		switch b {
@@ -48,37 +52,39 @@ func toBlockCloser(reader *bufio.Reader, closer byte, writer *bytes.Buffer) erro
 			// copy next already to not process rules with it.
 
 			if closer == '"' {
-				_, err = copyByte(reader, writer)
+				_, counter, err = copyByte(reader, writer, counter)
 				if err != nil {
-					return err
+					return counter, err
 				}
 			}
 
 		case closer:
 
 			// if we found a close not escaped stop and return
-			return nil
+			return counter, nil
 
 
 		case '{', '[', '"':
 
 			// if
 
-			err = toBlockCloser(reader, closers[b], writer)
+			counter, err = toBlockCloser(reader, closers[b], writer, counter)
 			if err != nil {
-				return err
+				return counter, err
 			}
 		}
 
 	}
 }
 
-func copyByte(reader *bufio.Reader, writer *bytes.Buffer) (byte, error) {
+func copyByte(reader *bufio.Reader, writer *bytes.Buffer, counter int) (byte, int, error) {
 	b, err := reader.ReadByte()
 	if err != nil {
-		return 0, err
+		return 0, counter, err
 	}
 
+	counter += 1
+
 	writer.WriteByte(b)
-	return b, nil
+	return b, counter, nil
 }

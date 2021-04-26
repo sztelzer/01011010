@@ -31,14 +31,6 @@ func Test_extractShippingPortId(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "wrong endpoint",
-			args: args{
-				path: "/shippigports/SYDY0",
-			},
-			want:    "",
-			wantErr: true,
-		},
-		{
 			name: "good cleanup",
 			args: args{
 				path: "/shippingports/SYDtY0{}",
@@ -49,11 +41,7 @@ func Test_extractShippingPortId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := extractShippingPortId(tt.args.path)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("extractShippingPortId() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := extractShippingPortId(tt.args.path)
 			if got != tt.want {
 				t.Errorf("extractShippingPortId() got = %v, want %v", got, tt.want)
 			}

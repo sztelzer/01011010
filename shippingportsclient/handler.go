@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/sztelzer/01011010/shippingportsprotocol"
@@ -17,33 +18,37 @@ func mainHandler(shippingPortsServerClient shippingportsprotocol.ShippingPortsSe
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			log.Println("GET", r.URL.Path)
-			
-			shippingPortId, err := extractShippingPortId(r.URL.Path)
-			if err != nil {
+
+			var content []byte
+			var err error
+
+			urlEndpointFilter := regexp.MustCompile(`^\/shippingports$`)
+			if urlEndpointFilter.MatchString(r.URL.Path) {
+				content, err = getManyShippingPorts(r.URL, shippingPortsServerClient)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				w.Header().Add("Content-Type", "application/json")
+				_, err = w.Write(content)
 				log.Println(err)
-				http.NotFound(w, r)
 				return
 			}
-			
-			// get the shippingPort from server
-			shippingPort, err := shippingPortsServerClient.Get(context.Background(), &shippingportsprotocol.ShippingPortId{Id: shippingPortId})
-			if err != nil {
-				log.Printf("error getting %s %+v", shippingPortId, err)
-				http.NotFound(w, r)
+
+			urlEndpointFilter = regexp.MustCompile(`^\/shippingports\/`)
+			if urlEndpointFilter.MatchString(r.URL.Path) {
+				content, err = getShippingPort(r.URL, shippingPortsServerClient)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				w.Header().Add("Content-Type", "application/json")
+				_, err = w.Write(content)
+				log.Println(err)
 				return
-			}
-			
-			// marshal shippingPort to JSON
-			shippingPortJsonBytes, err := protojson.Marshal(shippingPort)
-			if err != nil {
-				http.Error(w, "error marshalling response json", http.StatusInternalServerError)
-				return
-			}
-			
-			w.Header().Add("Content-Type", "application/json")
-			writtenCount, err := w.Write(shippingPortJsonBytes)
-			if err != nil {
-				log.Printf("error writing %d bytes %+v", writtenCount, err)
+
 			}
 		} else {
 			http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
@@ -52,16 +57,80 @@ func mainHandler(shippingPortsServerClient shippingportsprotocol.ShippingPortsSe
 }
 
 // extractShippingPortId from endpoint matching /shippingports/IDXX
-func extractShippingPortId (path string) (string, error) {
+func extractShippingPortId(path string) string {
 	// extract something resembling a shippingPortId from the url path under endpoint
 	urlEndpointFilter := regexp.MustCompile(`(?m)^\/shippingports\/`)
-	if !urlEndpointFilter.MatchString(path) {
-		return "", errors.New("not found")
-	}
 	shippingPortId := urlEndpointFilter.ReplaceAllString(path, "")
 	shippingPortIdFilter := regexp.MustCompile(`[^a-zA-Z0-9]`)
 	shippingPortId = shippingPortIdFilter.ReplaceAllString(shippingPortId, "")
 	shippingPortId = strings.ToUpper(shippingPortId)
-	
-	return shippingPortId, nil
+
+	return shippingPortId
+}
+
+func getShippingPort(url *url.URL, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) ([]byte, error) {
+	id := extractShippingPortId(url.Path)
+	// get the shippingPort from server
+	shippingPort, err := shippingPortsServerClient.Get(context.Background(), &shippingportsprotocol.ShippingPortId{Id: id})
+	if err != nil {
+		return []byte(""), err
+	}
+
+	// marshal shippingPort to JSON
+	shippingPortJsonBytes, err := protojson.Marshal(shippingPort)
+	if err != nil {
+		return []byte(""), err
+	}
+
+	return shippingPortJsonBytes, nil
+}
+
+
+func getManyShippingPorts(url *url.URL, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) ([]byte, error){
+	var size int32 = 100
+	var page int32 = 1
+
+	q := url.Query()
+	qSize := q.Get("size")
+	qPage := q.Get("page")
+
+	if qSize != "" {
+		qSizeInt, err := strconv.Atoi(qSize)
+		if err == nil {
+			size = int32(qSizeInt)
+			if size < 1 {
+				size = 1
+			}
+		}
+	}
+
+	if qPage != "" {
+		qPageInt, err := strconv.Atoi(qPage)
+		if err == nil {
+			page = int32(qPageInt)
+			if page < 1 {
+				page = 1
+			}
+		}
+	}
+
+
+
+	// get the shippingPort from server
+	shippingPorts, err := shippingPortsServerClient.GetMany(context.Background(), &shippingportsprotocol.Pagination{
+		Offset: (page-1) * size,
+		Size:   size,
+	})
+	if err != nil {
+		return []byte(""), err
+	}
+
+	// marshal shippingPort to JSON
+	shippingPortsJsonBytes, err := protojson.Marshal(shippingPorts)
+	if err != nil {
+		return []byte(""), err
+	}
+
+
+	return shippingPortsJsonBytes, nil
 }
