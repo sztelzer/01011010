@@ -40,6 +40,11 @@ func mainHandler(shippingPortsServerClient shippingportsprotocol.ShippingPortsSe
 			if urlEndpointFilter.MatchString(r.URL.Path) {
 				content, err = getShippingPort(r.URL, shippingPortsServerClient)
 				if err != nil {
+					if err.Error() == "rpc error: code = Unknown desc = not found" {
+						http.Error(w, "not found", http.StatusNotFound)
+						return
+					}
+
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
@@ -50,9 +55,8 @@ func mainHandler(shippingPortsServerClient shippingportsprotocol.ShippingPortsSe
 				return
 
 			}
-                        
-                        // TODO: respond not found
-                        http.Error(w, "not found", http.StatusNotFound)
+
+			http.Error(w, "not found", http.StatusNotFound)
 
 		} else {
 			http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
@@ -89,8 +93,7 @@ func getShippingPort(url *url.URL, shippingPortsServerClient shippingportsprotoc
 	return shippingPortJsonBytes, nil
 }
 
-
-func getManyShippingPorts(url *url.URL, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) ([]byte, error){
+func getManyShippingPorts(url *url.URL, shippingPortsServerClient shippingportsprotocol.ShippingPortsServerClient) ([]byte, error) {
 	var size int32 = 100
 	var page int32 = 1
 
@@ -118,11 +121,9 @@ func getManyShippingPorts(url *url.URL, shippingPortsServerClient shippingportsp
 		}
 	}
 
-
-
 	// get the shippingPort from server
 	shippingPorts, err := shippingPortsServerClient.GetMany(context.Background(), &shippingportsprotocol.Pagination{
-		Offset: (page-1) * size,
+		Offset: (page - 1) * size,
 		Size:   size,
 	})
 	if err != nil {
@@ -134,7 +135,6 @@ func getManyShippingPorts(url *url.URL, shippingPortsServerClient shippingportsp
 	if err != nil {
 		return []byte(""), err
 	}
-
 
 	return shippingPortsJsonBytes, nil
 }
