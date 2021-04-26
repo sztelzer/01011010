@@ -52,6 +52,7 @@ func mainHandler(shippingPortsServerClient shippingportsprotocol.ShippingPortsSe
 			}
                         
                         // TODO: respond not found
+                        http.Error(w, "not found", http.StatusNotFound)
 
 		} else {
 			http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
