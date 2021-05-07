@@ -47,33 +47,26 @@ func toBlockCloser(reader *bufio.Reader, closer byte, writer *bytes.Buffer, coun
 
 		switch b {
 		case '\\':
-
 			// if we are inside a string and must scape the next character
 			// copy next already to not process rules with it.
-
 			if closer == '"' {
 				_, counter, err = copyByte(reader, writer, counter)
 				if err != nil {
 					return counter, err
 				}
 			}
-
+			
 		case closer:
-
 			// if we found a close not escaped stop and return
 			return counter, nil
-
-
+			
 		case '{', '[', '"':
-
-			// if
-
+			// if we find something opening, find exit again
 			counter, err = toBlockCloser(reader, closers[b], writer, counter)
 			if err != nil {
 				return counter, err
 			}
 		}
-
 	}
 }
 

@@ -4,10 +4,11 @@ import (
 	"context"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"strconv"
-
+	
 	"github.com/sztelzer/01011010/shippingportsprotocol"
 	"google.golang.org/grpc"
 )
@@ -30,15 +31,15 @@ func init() {
 	if envServerAddress, ok := os.LookupEnv("SERVER_ADDRESS"); ok {
 		shippingPortsServerAddress = envServerAddress
 	}
-	
+
 	if envClientAddress, ok := os.LookupEnv("SERVE_CLIENT_AT_ADDRESS"); ok {
 		shippingPortsClientAddress = envClientAddress
 	}
-	
+
 	if envLoadFilename, ok := os.LookupEnv("LOAD_SHIPPING_PORTS_JSON_FILENAME"); ok {
 		shippingPortsOriginJsonFile = "dropbox/" + envLoadFilename
 	}
-	
+
 	if envLoadPutters, ok := os.LookupEnv("LOAD_SHIPPING_PORTS_PUTTERS"); ok {
 		n, err := strconv.Atoi(envLoadPutters)
 		if err != nil {
@@ -47,12 +48,16 @@ func init() {
 			shippingPortsPutters = n
 		}
 	}
-	
+
 }
 
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
+	
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 	
 	// Set up a connection to the ports server
 	// It will block if can't connect, like waiting for the server go online
@@ -62,19 +67,19 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer serverConnection.Close()
-	
+
 	// create a client for this connection
 	shippingPortsServerClient := shippingportsprotocol.NewShippingPortsServerClient(serverConnection)
-	
+
 	// load ports from file to shippingPortsServerClient, don't wait the loading
 	go loadShippingPortsFromFileToServer(ctx, shippingPortsServerClient)
-	
+
 	// Serve the REST API
 	// Register a handler for requests
 	http.HandleFunc("/", mainHandler(shippingPortsServerClient))
-	
+
 	srv := &http.Server{Addr: shippingPortsClientAddress}
-	
+
 	// Start server
 	go func() {
 		err = srv.ListenAndServe()
@@ -91,5 +96,5 @@ func main() {
 		log.Println(ctx.Err())
 		return
 	}
-	
+
 }

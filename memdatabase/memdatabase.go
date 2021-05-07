@@ -25,7 +25,7 @@ type Memdatabase struct {
 	reverseIndex map[string]int
 
 	// mu is a mutex to lock access to database while it is being accessed by one of the following functions
-	mu sync.Mutex
+	sync.Mutex
 
 	// max size is the maximum size in bytes of objects. it does not affect max quantity of elements.
 	// you must be watching for overall index size also.
@@ -47,8 +47,7 @@ func New(maxsize int) *Memdatabase {
 
 // Put store value under key index
 func (db *Memdatabase) Put(key string, value []byte) error {
-	db.mu.Lock()
-	defer db.mu.Unlock()
+	db.Lock()
 
 	// check if we have space for it
 	dbsize := db.size
@@ -59,6 +58,7 @@ func (db *Memdatabase) Put(key string, value []byte) error {
 	}
 
 	if dbsize+len(value) > db.max {
+		db.Unlock()
 		return errors.New(fmt.Sprintf("storing this value will exceed max size. free space for this key is %d and for new values is %d", db.max-dbsize, db.max-db.size))
 	}
 
@@ -70,15 +70,18 @@ func (db *Memdatabase) Put(key string, value []byte) error {
 
 	// reverseIndex
 	db.reverseIndex[key] = len(db.index) - 1
-
+	
+	db.Unlock()
+	
 	return nil
 }
 
 // Get retrieves the value under key, or returns error not nil if not found
 func (db *Memdatabase) Get(key string) ([]byte, error) {
-	db.mu.Lock()
-	defer db.mu.Unlock()
+	db.Lock()
 	value, ok := db.store[key]
+
+	db.Unlock()
 	if !ok {
 		return nil, errors.New("not found")
 	}
@@ -90,8 +93,7 @@ func (db *Memdatabase) Get(key string) ([]byte, error) {
 // Delete don't remove key from index, only empty it's reference
 // The reindexing of the database should be done eventually for consistency
 func (db *Memdatabase) Delete(key string) {
-	db.mu.Lock()
-	defer db.mu.Unlock()
+	db.Lock()
 	// delete form store
 	delete(db.store, key)
 	// get index position
@@ -100,16 +102,21 @@ func (db *Memdatabase) Delete(key string) {
 	db.index[i] = ""
 	// remove from reverseIndex also
 	delete(db.reverseIndex, key)
+	
+	db.Unlock()
 }
 
 func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, int, bool, error) {
 	var result = make([][]byte, 0)
 
+	db.Lock()
 	// check if offset is inside length of slice
 	if offset > len(db.index)-1 {
+		db.Unlock()
 		return result, 0, false, errors.New("offset out of database bounds")
 	}
-
+	db.Unlock()
+	
 	if offset < 0 {
 		offset = 0
 	}
@@ -120,6 +127,7 @@ func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, int, bool, erro
 
 	var skips int
 	for i := offset; i < offset+count+skips; i++ {
+		db.Lock()
 		// don't try to read past end
 		if i >= len(db.index) {
 			break
@@ -136,8 +144,10 @@ func (db *Memdatabase) GetMany(offset int, count int) ([][]byte, int, bool, erro
 		if value, ok := db.store[key]; ok {
 			result = append(result, value)
 		} else {
+			defer db.Unlock()
 			return result, len(result), offset+len(result) < len(db.store), errors.New("database index corrupted, please reindex")
 		}
+		db.Unlock()
 	}
 
 	return result, len(result), offset+len(result) < len(db.store), nil
